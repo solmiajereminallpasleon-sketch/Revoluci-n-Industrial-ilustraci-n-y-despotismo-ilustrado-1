@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz 100 Preguntas: Revolución Industrial e Ilustración</title>
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --secondary: #2b5876;
+            --accent: #4a90e2;
+            --light: #f8f9fa;
+            --dark: #333;
+            --success: #2d8b4e;
+            --danger: #e53e3e;
+            --warning: #d69e2e;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            width: 100%;
+            max-width: 1000px;
+        }
+        
+        .header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 1000px;
+            padding: 35px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .quiz-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .quiz-header h2 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 2.2rem;
+        }
+        
+        .quiz-header p {
+            color: var(--secondary);
+            font-size: 1.1rem;
+        }
+        
+        .instructions {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            border-left: 5px solid var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .timer-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: #eef4ff;
+            padding: 15px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .timer {
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+        
+        .score {
+            font-size: 1.4rem;
+            color: var(--secondary);
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid var(--primary);
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+        
+        .page-btn:hover {
+            background: #eef4ff;
+        }
+        
+        .page-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .page-btn.answered {
+            background: var(--accent);
+            color: white;
+            border-color: var(--accent);
+        }
+        
+        .question-container {
+            margin-bottom: 25px;
+        }
+        
+        .question-number {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .question {
+            font-size: 1.25rem;
+            margin-bottom: 20px;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+        
+        .options-container {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        
+        .option {
+            padding: 15px 20px;
+            background: var(--light);
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+        
+        .option:hover {
+            background: #eef4ff;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background: #d1e0ff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 8px rgba(26, 42, 108, 0.2);
+        }
+        
+        .option.correct {
+            background: #c6f6d5;
+            border-color: var(--success);
+        }
+        
+        .option.incorrect {
+            background: #fed7d7;
+            border-color: var(--danger);
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        
+        button.nav-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        #prev-btn {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        
+        #prev-btn:hover {
+            background: #cbd5e0;
+            transform: translateY(-2px);
+        }
+        
+        #next-btn {
+            background: var(--primary);
+            color: white;
+        }
+        
+        #next-btn:hover {
+            background: #152352;
+            transform: translateY(-2px);
+        }
+        
+        #submit-btn {
+            background: var(--secondary);
+            color: white;
+        }
+        
+        #submit-btn:hover {
+            background: #22465c;
+            transform: translateY(-2px);
+        }
+        
+        .results {
+            display: none;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .results h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+        
+        .final-score {
+            font-size: 2.5rem;
+            color: var(--secondary);
+            margin: 25px 0;
+            font-weight: bold;
+        }
+        
+        .review-container {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .review-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            background: var(--light);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .correct-answer {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .user-answer.correct {
+            color: var(--success);
+            font-weight: bold;
+        }
+        
+        .user-answer.incorrect {
+            color: var(--danger);
+            font-weight: bold;
+        }
+        
+        .difficulty {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            background: var(--secondary);
+            color: white;
+        }
+        
+        .hard {
+            background: var(--danger);
+        }
+        
+        .medium {
+            background: var(--warning);
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #e2e8f0;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 20px;
+                width: 95%;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            button.nav-btn {
+                width: 100%;
+            }
+            
+            .question {
+                font-size: 1.1rem;
+            }
+            
+            .option {
+                padding: 12px 15px;
+                font-size: 1rem;
+            }
+            
+            .page-btn {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Quiz Completo: 100 Preguntas</h1>
+        <p>Pon a prueba tus conocimientos sobre la Revolución Industrial e Ilustración</p>
+    </div>
+    
+    <div class="container">
+        <div class="quiz-header">
+            <h2>Revolución Industrial, Ilustración y Despotismo Ilustrado</h2>
+            <p>Examen completo con 100 preguntas desafiantes</p>
+        </div>
+        
+        <div class="instructions">
+            <p><strong>Instrucciones:</strong> Este examen contiene 100 preguntas de alta dificultad. Lee cada pregunta cuidadosamente y selecciona la respuesta correcta. Puedes navegar entre preguntas usando los botones de paginación o los botones de navegación. Tienes 120 minutos para completar el quiz. ¡Buena suerte!</p>
+        </div>
+        
+        <div class="timer-container">
+            <div>Tiempo restante: <span class="timer" id="timer">120:00</span></div>
+            <div>Pregunta: <span id="current-question">1</span>/100</div>
+            <div>Puntuación: <span class="score" id="score">0</span></div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress" style="width: 1%;"></div>
+        </div>
+        
+        <div class="pagination" id="pagination">
+            <!-- Los botones de paginación se generarán con JavaScript -->
+        </div>
+        
+        <div class="quiz-content" id="quiz-container">
+            <!-- Las preguntas se insertarán aquí mediante JavaScript -->
+        </div>
+        
+        <div class="navigation">
+            <button class="nav-btn" id="prev-btn" onclick="previousQuestion()">Anterior</button>
+            <button class="nav-btn" id="next-btn" onclick="nextQuestion()">Siguiente</button>
+            <button class="nav-btn" id="submit-btn" onclick="submitQuiz()">Finalizar Quiz</button>
+        </div>
+        
+        <div class="results" id="results">
+            <h2>Resultados del Quiz Completo</h2>
+            <p>Has completado el examen con 100 preguntas sobre la Revolución Industrial e Ilustración</p>
+            <p class="final-score">Puntuación: <span id="final-score">0</span>/100</p>
+            <p id="result-message"></p>
+            <button class="nav-btn" onclick="resetQuiz()">Intentar de nuevo</button>
+            
+            <div class="review-container" id="review-container">
+                <!-- Revisión de preguntas -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Preguntas para el quiz completo de 100 preguntas
+        const questions = [
+            {
+                question: "¿Qué historiador acuñó el término 'Revolución Industrial' y entre qué años situó su desarrollo en Gran Bretaña?",
+                options: ["Arnold Toynbee - 1760-1840", "Eric Hobsbawm - 1780-1850", "Karl Marx - 1750-1830"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1733 permitía fabricar tela de algodón del ancho deseado y quién fue su inventor?",
+                options: ["Lanzadora Volante - John Kay", "Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "Según Rousseau en 'El Contrato Social', ¿qué concepto define la relación entre el pueblo y sus gobernantes?",
+                options: ["Los gobernantes son funcionarios al servicio del pueblo", "El pueblo debe obediencia absoluta a sus gobernantes", "Los gobernantes tienen derecho divino para gobernar"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿En qué año y por quién fue inventada la máquina de vapor de doble efecto, que mejoró significativamente la eficiencia del motor de vapor?",
+                options: ["1785 - James Watt", "1782 - James Watt", "1768 - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué diferencia fundamental existía entre la Ilustración y el Despotismo Ilustrado en cuanto a la participación popular?",
+                options: ["Ilustración: soberanía popular; Despotismo: todo para el pueblo pero sin el pueblo", "Ilustración: gobierno representativo; Despotismo: democracia directa", "Ilustración: monarquía absoluta; Despotismo: república"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1795 revolucionó el procesamiento del algodón en Estados Unidos y quién fue su inventor?",
+                options: ["Desmotadora de algodón - Eli Whitney", "Spinning Jenny - John Hargreaves", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué obra de Montesquieu propuso la división de poderes y en qué año fue publicada?",
+                options: ["El espíritu de las leyes - 1748", "El contrato social - 1762", "Cartas persas - 1721"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué dos industrias, además de la textil, fueron fundamentales durante la Primera Revolución Industrial según los documentos?",
+                options: ["Metalurgia y transporte", "Agricultura y minería", "Química y alimentaria"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué plantea Locke respecto a la aplicación de la filosofía según los documentos estudiados?",
+                options: ["Que la filosofía debe aplicarse a un fin político y social", "Que la filosofía debe centrarse en la metafísica", "Que la filosofía debe separarse completamente de la política"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en la Enciclopedia editada por Diderot y D'Alembert?",
+                options: ["Recoger y divulgar todo el saber de la época", "Promover el absolutismo monárquico", "Defender el derecho divino de los reyes"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1784 permitió importantes avances en la industria metalúrgica y quién fue su inventor?",
+                options: ["Hierro laminado - Henry Cort", "Máquina de vapor - James Watt", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué frase caracteriza mejor la actitud del Despotismo Ilustrado según los documentos?",
+                options: ["Todo para el pueblo, pero sin el pueblo", "Todo por el pueblo y para el pueblo", "El pueblo debe tener voz y voto en todas las decisiones"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1774 permitía fabricar hilos de excelente calidad y finura y quién fue su inventor?",
+                options: ["Mule Jenny - Samuel Cromptón", "Water Frame - Richard Arkwright", "Spinning Jenny - John Hargreaves"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué precursores de la Ilustración se mencionan en los documentos y qué ideas representaban?",
+                options: ["Bacon (empirismo), Descartes (racionalismo), Locke (filosofía aplicada a lo político)", "Voltaire (división de poderes), Rousseau (contrato social), Montesquieu (crítica social)", "Diderot (enciclopedismo), D'Alembert (cientificismo), Quesnay (fisiocracia)"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿En qué año se inventó la primera bomba a vapor y quién fue su inventor?",
+                options: ["1712 - Thomas Newcomen", "1701 - Jethro Tull", "1782 - James Watt"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué sector social fue el principal impulsor de las ideas de la Ilustración según los documentos?",
+                options: ["La burguesía", "La nobleza", "El clero"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué consecuencias sociales tuvo la Revolución Industrial según los documentos estudiados?",
+                options: ["Concentración fabril y surgimiento del proletariado", "Mejora inmediata de las condiciones laborales", "Disminución de la población urbana"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1732 facilitó las labores agrícolas y quién fue su inventor?",
+                options: ["Trilladora - Michael Menzies", "Sembradora mecánica - Jethro Tull", "Desmotadora de algodón - Eli Whitney"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué postura tenía Voltaire respecto a la religión según se desprende de los documentos?",
+                options: ["Deísta", "Ateo radical", "Católico ortodoxo"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué monarcas son mencionados como representantes del Despotismo Ilustrado en los documentos?",
+                options: ["Carlos III de España, Catalina II de Rusia, Federico II de Prusia", "Luis XVI de Francia, Jorge III de Inglaterra, José II de Austria", "María Teresa de Austria, Federico Guillermo de Prusia, Fernando VI de España"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1768 permitía el hilado continuo y quién fue su inventor?",
+                options: ["Water frame - Richard Arkwright", "Spinning Jenny - John Hargreaves", "Mule Jenny - Samuel Cromptón"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en su reverencia a la naturaleza?",
+                options: ["Búsqueda de conocimiento basado en la observación y razón", "Rechazo al progreso técnico y científico", "Defensa del misticismo y lo sobrenatural"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1802 está asociado con los inicios del transporte automotor y quién fue su inventor?",
+                options: ["Primer automóvil de vapor - Joseph Gugnot", "Locomotora - George Stephenson", "Barco a vapor - Robert Fulton"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿En qué obra Rousseau expone sus ideas sobre la educación y cómo debe ser esta?",
+                options: ["El Emilio", "El Contrato Social", "Las Confesiones"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1786 revolucionó la producción textil y quién fue su inventor?",
+                options: ["Telar Mecánico - Edmund Cartwright", "Lanzadora Volante - John Kay", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué objetivo anticlerical tenía la Enciclopedia según los documentos?",
+                options: ["Cuestionar el poder y dogmas de la Iglesia", "Promover una nueva religión basada en la razón", "Establecer una teocracia ilustrada"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1701 mejoró la eficiencia de la siembra y quién fue su inventor?",
+                options: ["Sembradora mecánica - Jethro Tull", "Trilladora - Michael Menzies", "Desmotadora de algodón - Eli Whitney"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto político propuesto por la Ilustración fue ignorado por el Despotismo Ilustrado?",
+                options: ["La soberanía popular", "La división de poderes", "La tolerancia religiosa"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1807 aplicó la máquina de vapor a la navegación y quién fue su inventor?",
+                options: ["Barco a vapor - Robert Fulton", "Locomotora - George Stephenson", "Automóvil de vapor - Joseph Gugnot"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿En qué se diferenciaban la Ilustración y el Despotismo Ilustrado en su visión del absolutismo?",
+                options: ["La Ilustración lo cuestionaba, el Despotismo Ilustrado lo mantenía", "La Ilustración lo defendía, el Despotismo Ilustrado lo rechazaba", "Ambas corrientes lo cuestionaban por igual"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1836 revolucionó el transporte terrestre y quién fue su inventor?",
+                options: ["Locomotora - George Stephenson", "Automóvil de vapor - Joseph Gugnot", "Barco a vapor - Robert Fulton"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué proceso de extracción inventó Andrés Margat en 1747 según los documentos?",
+                options: ["Extracción de azúcar de remolacha", "Extracción de hierro para fundición", "Extracción de carbón mineral"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué medio de difusión fue crucial para la expansión de las ideas ilustradas según los documentos?",
+                options: ["La prensa y los libros", "Los sermones religiosos", "Las proclamas reales"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1844 revolucionó las comunicaciones a distancia y quién fue su inventor?",
+                options: ["Telégrafo - Samuel Morse", "Telar mecánico - Edmund Cartwright", "Máquina de vapor - James Watt"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué reforma caracterizó al Despotismo Ilustrado en el ámbito religioso?",
+                options: ["Tolerancia religiosa", "Establecimiento de religiones estatales", "Persecución de minorías religiosas"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1765 permitía que un solo obrero manejara 120 hilos simultáneamente y quién fue su inventor?",
+                options: ["Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright", "Mule Jenny - Samuel Cromptón"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto de Rousseau sobre la naturaleza humana se menciona en los documentos?",
+                options: ["El hombre nace bueno pero la sociedad lo corrompe", "El hombre nace malo y la sociedad lo mejora", "El hombre es una tabula rasa al nacer"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿En qué año James Watt patentó su mejora de la máquina de vapor que la hizo mucho más eficiente?",
+                options: ["1782", "1765", "1774"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué aspecto del pensamiento ilustrado influyó en las revoluciones americana y francesa según los documentos?",
+                options: ["Sus ideas de libertad, igualdad y razón", "Su defensa del absolutismo ilustrado", "Su rechazo a la participación política popular"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1785 aplicó la máquina de vapor para producir movimiento rotativo y quién fue su inventor?",
+                options: ["Máquina de vapor de doble efecto - James Watt", "Water Frame - Richard Arkwright", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en su búsqueda de lo útil y lo pragmático?",
+                options: ["Valoración del éxito de la técnica", "Rechazo al progreso científico", "Defensa de conocimientos abstractos sin aplicación práctica"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1712 sentó las bases para el desarrollo de la máquina de vapor moderna?",
+                options: ["Bomba a vapor - Thomas Newcomen", "Sembradora mecánica - Jethro Tull", "Lanzadora volante - John Kay"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto político desarrolló Montesquieu que sería fundamental para los sistemas democráticos modernos?",
+                options: ["División de poderes", "Soberanía popular", "Contrato social"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1793 facilitó la separación de las fibras de algodón de sus semillas?",
+                options: ["Desmotadora de algodón - Eli Whitney", "Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado criticó duramente la intolerancia religiosa y defendió la libertad de pensamiento?",
+                options: ["Voltaire", "Rousseau", "Montesquieu"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado lo diferenciaba del absolutismo tradicional?",
+                options: ["Su intento de aplicar reformas ilustradas sin cambiar la estructura de poder", "Su rechazo total a las ideas de la Ilustración", "Su defensa de la participación popular en el gobierno"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1733 aumentó significativamente la velocidad del tejido?",
+                options: ["Lanzadora volante - John Kay", "Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué obra de Voltaire criticaba el optimismo filosófico y satirizaba la sociedad europea?",
+                options: ["Cándido", "Cartas filosóficas", "Diccionario filosófico"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué consecuencia demográfica tuvo la Revolución Industrial según los documentos?",
+                options: ["Explosión demográfica que permitió aumento de demanda y mano de obra", "Descenso demográfico por las malas condiciones de vida", "Migración masiva del campo a las colonias"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1784 mejoró la calidad del hierro y facilitó su uso en la construcción?",
+                options: ["Hierro laminado - Henry Cort", "Máquina de vapor - James Watt", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto defendía Rousseau respecto al origen de la legitimidad política?",
+                options: ["La soberanía reside en el pueblo", "El derecho divino de los reyes", "La superioridad natural de la aristocracia"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1764 permitió hilar múltiples hilos simultáneamente?",
+                options: ["Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright", "Mule Jenny - Samuel Cromptón"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en su actitud crítica hacia las instituciones establecidas?",
+                options: ["Crítica despiadada a la monarquía absolutista, la iglesia y la sociedad vigente", "Defensa del statu quo y rechazo a cambios sociales", "Aceptación acrítica de las tradiciones y autoridades"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1814 mejoró significativamente el transporte terrestre de mercancías?",
+                options: ["Locomotora de vapor - George Stephenson", "Automóvil de vapor - Joseph Gugnot", "Barco a vapor - Robert Fulton"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué pensador ilustrado propuso la idea de que el conocimiento humano proviene de la experiencia?",
+                options: ["John Locke", "René Descartes", "Francis Bacon"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica del sistema político inglés favoreció el desarrollo de la Revolución Industrial según los documentos?",
+                options: ["Sistema político parlamentario liberal", "Monarquía absolutista centralizada", "Gobierno teocrático"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1790 combinó las ventajas de la Spinning Jenny y la Water Frame?",
+                options: ["Mule Jenny - Samuel Cromptón", "Telar mecánico - Edmund Cartwright", "Lanzadora volante - John Kay"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto filosófico defendía Descartes como base del conocimiento?",
+                options: ["Racionalismo", "Empirismo", "Escepticismo"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué transformación previa a la Revolución Industrial creó las condiciones para su desarrollo?",
+                options: ["Transformaciones agrícolas", "Revolución comercial", "Reforma religiosa"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1830 mejoró la eficiencia de la producción de hilo?",
+                options: ["Self-acting mule - Richard Roberts", "Water Frame - Richard Arkwright", "Spinning Jenny - John Hargreaves"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado es considerado el precursor del empirismo?",
+                options: ["Francis Bacon", "John Locke", "David Hume"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración influyó en el desarrollo de enciclopedias y obras de divulgación?",
+                options: "Su objetivo de recoger y divulgar todo el saber de la época",
+                options: ["Su objetivo de recoger y divulgar todo el saber de la época", "Su rechazo al conocimiento científico", "Su focalización en temas exclusivamente filosóficos"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1785 mecanizó el proceso de tejido?",
+                options: ["Telar mecánico - Edmund Cartwright", "Lanzadora volante - John Kay", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto político defendía Voltaire como alternativa al despotismo?",
+                options: ["Monarquía constitucional con libertad de pensamiento", "República democrática", "Teocracia ilustrada"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué factor económico internacional favoreció el desarrollo de la Revolución Industrial en Inglaterra?",
+                options: ["Gran demanda de mercancías por parte de las colonias", "Aislamiento económico y autarquía", "Competencia tecnológica con Asia"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1825 revolucionó el transporte de pasajeros?",
+                options: ["Ferrocarril de Stockton a Darlington - George Stephenson", "Barco a vapor - Robert Fulton", "Automóvil de vapor - Joseph Gugnot"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué pensador ilustrado criticó la propiedad privada y defendió la igualdad económica?",
+                options: ["Jean-Jacques Rousseau", "Voltaire", "Montesquieu"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado se refleja en su lema 'Todo para el pueblo, pero sin el pueblo'?",
+                options: ["Reformismo desde arriba sin participación popular", "Democracia directa con participación ciudadana", "Gobierno teocrático basado en principios religiosos"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1800 permitió la producción masiva de piezas metálicas intercambiables?",
+                options: ["Sistema de fabricación con piezas intercambiables - Eli Whitney", "Hierro laminado - Henry Cort", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto defendían los fisiócratas, precursores de la economía moderna?",
+                options: ["La tierra como principal fuente de riqueza", "El comercio internacional como motor económico", "La industrialización como base de la economía"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en el método científico y la experimentación?",
+                options: ["Énfasis en la razón y la observación empírica", "Valoración exclusiva del conocimiento tradicional", "Rechazo al método científico experimental"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1812 facilitó el desmotado del algodón a gran escala?",
+                options: ["Desmotadora de algodón mejorada - Robert Baker", "Spinning Jenny - John Hargreaves", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado propuso la separación entre Iglesia y Estado?",
+                options: ["Voltaire", "Rousseau", "Montesquieu"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué consecuencia geopolítica tuvo la Revolución Industrial según los documentos?",
+                options: ["Expansión colonialista europea", "Reducción de las colonias europeas", "Aislamiento de las potencias industriales"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1829 estableció el estándar para las locomotoras de vapor?",
+                options: ["Rocket - George Stephenson", "Puffing Devil - Richard Trevithick", "Northumbrian - Timothy Hackworth"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto político defendía Montesquieu para evitar la concentración de poder?",
+                options: ["División de poderes (ejecutivo, legislativo, judicial)", "Gobierno unipersonal con poderes ilimitados", "Sistema de consejos populares"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica de la Ilustración influyó en el desarrollo de los derechos humanos?",
+                options: ["Defensa de la libertad e igualdad", "Justificación de la desigualdad natural", "Defensa del privilegio aristocrático"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1830 incrementó la velocidad de producción textil?",
+                options: ["Telar mecánico mejorado - Richard Roberts", "Lanzadora volante - John Kay", "Water Frame - Richard Arkwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado cuestionó el sistema educativo tradicional en su obra Emilio?",
+                options: ["Jean-Jacques Rousseau", "Voltaire", "Denis Diderot"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado se refleja en las reformas educativas?",
+                options: ["Apoyo a la educación como medio de progreso", "Rechazo a la educación popular", "Restricción de la educación a las élites"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1783 mejoró la eficiencia de la máquina de vapor?",
+                options: ["Motor de doble efecto - James Watt", "Bomba a vapor - Thomas Newcomen", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto económico desarrolló Adam Smith influido por las ideas ilustradas?",
+                options: ["La mano invisible del mercado", "El proteccionismo económico", "La economía planificada"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración se refleja en su confianza en el progreso humano?",
+                options: ["Fe en el progreso científico y artístico como medios para lograr la felicidad", "Escepticismo sobre la capacidad de mejora humana", "Nostalgia por un pasado idealizado"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1797 permitió la producción masiva de componentes metálicos?",
+                options: ["Torno de tornillo - Henry Maudslay", "Hierro laminado - Henry Cort", "Telar mecánico - Edmund Cartwright"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado defendió la tolerancia religiosa en su Tratado sobre la tolerancia?",
+                options: ["Voltaire", "Rousseau", "Montesquieu"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado se refleja en las reformas judiciales?",
+                options: ["Modernización del sistema judicial", "Mantenimiento de sistemas judiciales arcaicos", "Eliminación de los sistemas judiciales"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1804 permitió el transporte por ferrocarril?",
+                options: ["Locomotora de vapor - Richard Trevithick", "Barco a vapor - Robert Fulton", "Automóvil de vapor - Joseph Gugnot"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto político defendía Rousseau en su obra El Contrato Social?",
+                options: ["La soberanía popular y el contrato social", "El derecho divino de los reyes", "El despotismo ilustrado"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración influyó en la independencia de las trece colonias americanas?",
+                options: ["Ideas de libertad e igualdad", "Defensa del colonialismo europeo", "Justificación de la monarquía absoluta"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1813 mejoró la eficiencia de las minas de carbón?",
+                options: ["Lámpara de seguridad - Humphry Davy", "Bomba a vapor - Thomas Newcomen", "Máquina de vapor - James Watt"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado editó la Enciclopedia junto con D'Alembert?",
+                options: ["Denis Diderot", "Voltaire", "Rousseau"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado se refleja en las reformas tributarias?",
+                options: ["Modernización del sistema fiscal", "Aumento de impuestos sin reformas", "Eliminación de todos los impuestos"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1822 revolucionó la producción de herramientas?",
+                options: ["Fresadora - Eli Whitney", "Torno de tornillo - Henry Maudslay", "Hierro laminado - Henry Cort"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto filosófico defendía Locke respecto al conocimiento humano?",
+                options: ["La tabula rasa o mente como papel en blanco", "Las ideas innatas", "El escepticismo radical"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración influyó en la abolición de la tortura y la pena cruel?",
+                options: ["Humanitarismo y crítica a la justicia brutal", "Defensa de castigos ejemplares", "Indiferencia hacia los derechos de los acusados"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1839 mejoró la eficiencia de la producción agrícola?",
+                options: ["Segadora mecánica - Cyrus McCormick", "Sembradora mecánica - Jethro Tull", "Trilladora - Michael Menzies"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué pensador ilustrado criticó el sistema penal en su obra De los delitos y las penas?",
+                options: ["Cesare Beccaria", "Voltaire", "Montesquieu"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado limitaba su potencial transformador?",
+                options: ["El mantenimiento del absolutismo a pesar de las reformas", "La excesiva rapidez en los cambios", "La falta de interés en reformas prácticas"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1843 mejoró las comunicaciones a larga distancia?",
+                options: ["Telégrafo eléctrico - Samuel Morse", "Telar mecánico - Edmund Cartwright", "Locomotora - George Stephenson"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué concepto político defendían los enciclopedistas respecto a la organización social?",
+                options: ["La sociedad basada en la razón y el progreso", "La sociedad estamental tradicional", "La teocracia como forma ideal de gobierno"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica de la Ilustración la convirtió en base ideológica de la burguesía?",
+                options: ["Su defensa de la libertad, igualdad y propiedad", "Su apoyo al absolutismo monárquico", "Su rechazo al progreso económico"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué invento de 1851 simbolizó el liderazgo industrial británico?",
+                options: ["El Palacio de Cristal de la Gran Exposición", "La locomotora Rocket", "El telégrafo eléctrico"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué pensadora ilustrada defendió los derechos de la mujer en su Vindicación de los derechos de la mujer?",
+                options: ["Mary Wollstonecraft", "Olympe de Gouges", "Madame de Staël"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué característica del Despotismo Ilustrado explica su fracaso final en la mayoría de países?",
+                options: ["Su incapacidad para satisfacer las demandas de cambio de la burguesía", "Su exceso de reformas radicales", "Su rechazo a cualquier tipo de reforma"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué invento de 1856 revolucionó la producción de acero?",
+                options: ["Convertidor Bessemer - Henry Bessemer", "Horno de coque - Abraham Darby", "Laminador de hierro - Henry Cort"],
+                answer: 0,
+                difficulty: "hard"
+            },
+            {
+                question: "¿Qué concepto de la Ilustración influyó en la idea de que los gobernantes deben servir al pueblo?",
+                options: ["La soberanía popular y el contrato social", "El derecho divino de los reyes", "La superioridad natural de la aristocracia"],
+                answer: 0,
+                difficulty: "medium"
+            },
+            {
+                question: "¿Qué característica de la Revolución Industrial explica su inicio en Inglaterra rather than en otros países?",
+                options: ["La combinación de factores políticos, económicos y sociales favorables", "La superioridad racial del pueblo inglés", "El azar y la casualidad histórica"],
+                answer: 0,
+                difficulty: "hard"
+            }
+        ];
+
+        // Variables de estado
+        let currentQuestion = 0;
+        let score = 0;
+        let userAnswers = new Array(questions.length).fill(null);
+        let timeLeft = 120 * 60; // 120 minutos en segundos
+        let timerInterval;
+
+        // Inicializar el quiz
+        function initializeQuiz() {
+            generatePagination();
+            displayQuestion();
+            startTimer();
+            updateNavigation();
+            updateProgress();
+        }
+
+        // Generar botones de paginación
+        function generatePagination() {
+            const paginationContainer = document.getElementById('pagination');
+            paginationContainer.innerHTML = '';
+            
+            // Solo mostrar 20 botones de paginación a la vez para no saturar la interfaz
+            const startPage = Math.floor(currentQuestion / 20) * 20;
+            const endPage = Math.min(startPage + 20, questions.length);
+            
+            // Botón para ir al primer grupo
+            if (startPage > 0) {
+                const firstBtn = document.createElement('div');
+                firstBtn.className = 'page-btn';
+                firstBtn.textContent = '<<';
+                firstBtn.addEventListener('click', () => goToQuestion(0));
+                paginationContainer.appendChild(firstBtn);
+            }
+            
+            // Botón para grupo anterior
+            if (startPage > 0) {
+                const prevBtn = document.createElement('div');
+                prevBtn.className = 'page-btn';
+                prevBtn.textContent = '<';
+                prevBtn.addEventListener('click', () => goToQuestion(startPage - 20));
+                paginationContainer.appendChild(prevBtn);
+            }
+            
+            // Botones de preguntas
+            for (let i = startPage; i < endPage; i++) {
+                const pageBtn = document.createElement('div');
+                pageBtn.className = 'page-btn';
+                pageBtn.textContent = i + 1;
+                pageBtn.addEventListener('click', () => goToQuestion(i));
+                
+                if (i === currentQuestion) {
+                    pageBtn.classList.add('active');
+                }
+                
+                if (userAnswers[i] !== null) {
+                    pageBtn.classList.add('answered');
+                }
+                
+                paginationContainer.appendChild(pageBtn);
+            }
+            
+            // Botón para siguiente grupo
+            if (endPage < questions.length) {
+                const nextBtn = document.createElement('div');
+                nextBtn.className = 'page-btn';
+                nextBtn.textContent = '>';
+                nextBtn.addEventListener('click', () => goToQuestion(endPage));
+                paginationContainer.appendChild(nextBtn);
+            }
+            
+            // Botón para último grupo
+            if (endPage < questions.length) {
+                const lastBtn = document.createElement('div');
+                lastBtn.className = 'page-btn';
+                lastBtn.textContent = '>>';
+                lastBtn.addEventListener('click', () => goToQuestion(questions.length - 1));
+                paginationContainer.appendChild(lastBtn);
+            }
+        }
+
+        // Ir a una pregunta específica
+        function goToQuestion(index) {
+            currentQuestion = index;
+            displayQuestion();
+            updateNavigation();
+            generatePagination();
+            updateProgress();
+        }
+
+        // Actualizar barra de progreso
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const progressPercentage = (answeredCount / questions.length) * 100;
+            document.getElementById('progress').style.width = `${progressPercentage}%`;
+        }
+
+        // Mostrar la pregunta actual
+        function displayQuestion() {
+            const quizContainer = document.getElementById('quiz-container');
+            const question = questions[currentQuestion];
+            
+            let optionsHTML = '';
+            question.options.forEach((option, index) => {
+                optionsHTML += `
+                    <div class="option ${userAnswers[currentQuestion] === index ? 'selected' : ''}" 
+                         onclick="selectOption(${index})">
+                        ${option}
+                    </div>
+                `;
+            });
+            
+            quizContainer.innerHTML = `
+                <div class="question-container">
+                    <div class="question-number">Pregunta ${currentQuestion + 1}/${questions.length} 
+                        <span class="difficulty ${question.difficulty}">${question.difficulty}</span>
+                    </div>
+                    <div class="question">${question.question}</div>
+                </div>
+                <div class="options-container">
+                    ${optionsHTML}
+                </div>
+            `;
+            
+            document.getElementById('current-question').textContent = currentQuestion + 1;
+            document.getElementById('score').textContent = score;
+        }
+
+        // Seleccionar una opción
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            displayQuestion();
+            generatePagination();
+            updateProgress();
+        }
+
+        // Navegación entre preguntas
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+                updateNavigation();
+                generatePagination();
+                updateProgress();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+                updateNavigation();
+                generatePagination();
+                updateProgress();
+            }
+        }
+
+        function updateNavigation() {
+            document.getElementById('prev-btn').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('next-btn').style.display = 'none';
+                document.getElementById('submit-btn').style.display = 'block';
+            } else {
+                document.getElementById('next-btn').style.display = 'block';
+                document.getElementById('submit-btn').style.display = 'none';
+            }
+        }
+
+        // Temporizador
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        // Finalizar el quiz
+        function submitQuiz() {
+            clearInterval(timerInterval);
+            
+            // Calcular puntuación
+            score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].answer) {
+                    score++;
+                }
+            }
+            
+            // Mostrar resultados
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('result-message').textContent = getResultMessage(score);
+            
+            // Mostrar revisión de preguntas
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '<h3>Revisión de preguntas:</h3>';
+            
+            for (let i = 0; i < questions.length; i++) {
+                const question = questions[i];
+                const userAnswer = userAnswers[i];
+                const isCorrect = userAnswer === question.answer;
+                
+                reviewContainer.innerHTML += `
+                    <div class="review-item">
+                        <p><strong>Pregunta ${i + 1} [<span class="difficulty ${question.difficulty}">${question.difficulty}</span>]:</strong> ${question.question}</p>
+                        <p class="user-answer ${isCorrect ? 'correct' : 'incorrect'}">Tu respuesta: ${userAnswer !== null ? question.options[userAnswer] : 'Sin responder'}</p>
+                        ${!isCorrect ? `<p class="correct-answer">Respuesta correcta: ${question.options[question.answer]}</p>` : ''}
+                    </div>
+                `;
+            }
+            
+            document.getElementById('quiz-container').style.display = 'none';
+            document.querySelector('.navigation').style.display = 'none';
+            document.querySelector('.timer-container').style.display = 'none';
+            document.querySelector('.instructions').style.display = 'none';
+            document.querySelector('.pagination').style.display = 'none';
+            document.querySelector('.progress-bar').style.display = 'none';
+            document.getElementById('results').style.display = 'block';
+        }
+
+        function getResultMessage(score) {
+            if (score >= 90) return "¡Excelente! Tienes un conocimiento excepcional del tema.";
+            if (score >= 70) return "¡Muy bien! Demuestras un dominio avanzado de los conceptos.";
+            if (score >= 50) return "Buen resultado. Tienes un buen conocimiento pero puedes mejorar.";
+            return "Necesitas estudiar más estos temas. Revisa los documentos y vuelve a intentarlo.";
+        }
+
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = new Array(questions.length).fill(null);
+            timeLeft = 120 * 60;
+            
+            document.getElementById('quiz-container').style.display = 'block';
+            document.querySelector('.navigation').style.display = 'flex';
+            document.querySelector('.timer-container').style.display = 'flex';
+            document.querySelector('.instructions').style.display = 'block';
+            document.querySelector('.pagination').style.display = 'flex';
+            document.querySelector('.progress-bar').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            initializeQuiz();
+        }
+
+        // Iniciar el quiz cuando se carga la página
+        window.onload = initializeQuiz;
+    </script>
+</body>
+</html>
